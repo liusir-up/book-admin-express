@@ -1,12 +1,15 @@
+import UserRouter from "./routes/users";
 import BookRouter from "./routes/book";
+import CategoryRouter from "./routes/category";
+import BorrowRouter from "./routes/borrow";
+import { expressjwt } from "express-jwt";
 import express, { Request, Response, NextFunction } from 'express';
-
-var createError = require('http-errors');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-
-const req = require('express/lib/request');
+import {SECRET_KEY} from "./constant";
+import createError from 'http-errors';
+import path from 'path';
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
 require('./model/index');
 
 var app = express();
@@ -20,8 +23,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+    secret: SECRET_KEY,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+}));
+app.use(expressjwt({secret: SECRET_KEY, algorithms: ['HS256']} ).unless({
+    path: ['/api/users/login', '/api/users/logout'],
+  })
+);
 
+app.use('/api/users', UserRouter);
 app.use('/api/books', BookRouter);
+app.use('/api/categories', CategoryRouter);
+app.use('/api/borrows', BorrowRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function (req: Request, res: Response, next: NextFunction) {

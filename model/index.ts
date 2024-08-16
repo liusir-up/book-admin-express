@@ -1,5 +1,7 @@
 import userSchema from "./userModel";
 import bookSchema from "./bookModel";
+import categorySchema from "./categoryModel";
+import borrowSchema from "./borrowModel";
 
 const mongoose = require('mongoose');
 
@@ -20,4 +22,6 @@ main()
 
 const User = mongoose.model('User', userSchema);
 const Book = mongoose.model('Book', bookSchema);
-export { User, Book };
+const Category = mongoose.model('Category', categorySchema);
+const Borrow = mongoose.model('Borrow', borrowSchema);
+export { User, Book, Category, Borrow };
